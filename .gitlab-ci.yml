@@ -1,0 +1,31 @@
+stages:
+  - test
+
+integration-test:
+  extends: .node-cache
+  stage: test
+  image: node:14-buster
+
+  services:
+    - name: docker:20.10.1-dind
+      command: ['--tls=false', '--host=tcp://0.0.0.0:2376']
+
+  variables:
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: "overlay2"
+
+  script:
+    - export CI=true
+    - npm ci
+    - npm test
+    - npm run test:integration
+
+.node-cache:
+  cache:
+    key:
+      files:
+        - package.json
+        - package-lock.json
+    paths:
+      - node_modules
