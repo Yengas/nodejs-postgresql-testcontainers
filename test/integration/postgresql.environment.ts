@@ -14,11 +14,6 @@ class PostgreSQLEnvironment extends TestcontainersEnvironment {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private postgreSQLAdapter: PostgreSQLAdapter = undefined as any;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(config: any) {
-    super(config);
-  }
-
   async setup() {
     await super.setup();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,10 +39,6 @@ class PostgreSQLEnvironment extends TestcontainersEnvironment {
   async teardown() {
     await super.teardown();
     this.postgreSQLAdapter && (await this.postgreSQLAdapter.close());
-  }
-
-  runScript(script: Parameters<TestcontainersEnvironment['runScript']>[0]) {
-    return super.runScript(script);
   }
 }
 
