@@ -12,6 +12,7 @@ const repository = new ProductIntersectionRepository(postgreSQLAdapter);
 
 describe('ProductIntersectionRepository', () => {
   const UUID_PREFIX = 'f4f4c9e3-a077-4f3c-bf73-9c54cb57ffa';
+  const UUID_PREFIX_2 = 'f4f4c9e3-a077-4f3c-bf73-9c54cb57ffb';
 
   beforeEach(async () => {
     await postgreSQLAdapter.query('DELETE FROM advertisements');
@@ -62,9 +63,86 @@ describe('ProductIntersectionRepository', () => {
 
       const result = await repository.getActiveAdvertisementProducts({
         sellerID: SELLER_ID,
+        startDateTime: BASE_ADVERTISEMENT.startDateTime,
+        endDateTime: BASE_ADVERTISEMENT.endDateTime,
       });
 
       expect(result).toEqual(expectedResult);
+    });
+
+    it('should only return products for advertisements in intersecting times', async () => {
+      const startDateTime = new Date(5);
+      const endDateTime = new Date(10);
+
+      // all advertisements are active and for are owned by our seller
+      const baseAdvertisement = {
+        ...BASE_ADVERTISEMENT,
+        sellerID: SELLER_ID,
+        isActive: true,
+      };
+
+      const intersectingAdvertisements: AdvertisementWithProducts[] = [
+        {
+          ...baseAdvertisement,
+          id: UUID_PREFIX + '1',
+          startDateTime: new Date(4),
+          endDateTime: new Date(5),
+          products: [1, 2, 3],
+        },
+        {
+          ...baseAdvertisement,
+          id: UUID_PREFIX + '2',
+          startDateTime: new Date(6),
+          endDateTime: new Date(7),
+          products: [2, 3, 4],
+        },
+        {
+          ...baseAdvertisement,
+          id: UUID_PREFIX + '3',
+          startDateTime: new Date(10),
+          endDateTime: new Date(11),
+          products: [5, 6, 7],
+        },
+        {
+          ...baseAdvertisement,
+          id: UUID_PREFIX + '4',
+          startDateTime: new Date(4),
+          endDateTime: new Date(11),
+          products: [7, 8, 9],
+        },
+      ];
+
+      const nonIntersectingAdvertisements: AdvertisementWithProducts[] = [
+        {
+          ...baseAdvertisement,
+          id: UUID_PREFIX_2 + '1',
+          startDateTime: new Date(4),
+          endDateTime: new Date(4),
+          products: [10, 11],
+        },
+        {
+          ...baseAdvertisement,
+          id: UUID_PREFIX_2 + '2',
+          startDateTime: new Date(11),
+          endDateTime: new Date(11),
+          products: [12, 13],
+        },
+      ];
+
+      await adRepository.insertAdvertisementsWithProducts([
+        ...intersectingAdvertisements,
+        ...nonIntersectingAdvertisements,
+      ]);
+
+      const result = await repository.getActiveAdvertisementProducts({
+        sellerID: SELLER_ID,
+        startDateTime,
+        endDateTime,
+      });
+
+      expect(result).toEqual(
+        expect.arrayContaining(intersectingAdvertisements)
+      );
     });
   });
 });

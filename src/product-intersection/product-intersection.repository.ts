@@ -16,9 +16,13 @@ export class ProductIntersectionRepository {
       WHERE
         a.seller_id = $1
         AND a.is_active = true
+        AND $2 <= end_date_time
+        AND $3 >= start_date_time
       GROUP BY a.id
     `;
-    const params = [query.sellerID];
+
+    const {sellerID, startDateTime, endDateTime} = query;
+    const params = [sellerID, startDateTime, endDateTime];
 
     const {
       rows,
@@ -33,4 +37,6 @@ export class ProductIntersectionRepository {
 
 type ProductIntersectionQuery = {
   sellerID: number;
+  startDateTime: Date;
+  endDateTime: Date;
 };
