@@ -32,7 +32,7 @@ describe('ProductIntersectionRepository', () => {
       products: [],
     };
 
-    it('should only return products for given sellers active products', async () => {
+    it('should only return products for given sellers active advertisements', async () => {
       const advertisements: AdvertisementWithProducts[] = [
         {
           ...BASE_ADVERTISEMENT,
