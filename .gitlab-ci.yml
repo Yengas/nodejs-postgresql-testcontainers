@@ -4,7 +4,7 @@ stages:
 integration-test:
   extends: .node-cache
   stage: test
-  image: node:14-buster
+  image: node:14-alpine
 
   services:
     - name: docker:20.10.1-dind

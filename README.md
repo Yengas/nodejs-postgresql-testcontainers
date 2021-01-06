@@ -1,6 +1,8 @@
 # nodejs-postgresql-testcontainers
 An example project showcasing how to use [@trendyol/jest-testcontainers](https://github.com/Trendyol/jest-testcontainers) to write integration tests for your PostgreSQL queries.
 
+Read the article describing this project in detail [on Medium](https://medium.com/trendyol-tech/how-to-test-database-queries-and-more-with-node-js-2f02b08707a7).
+
 ### Project Structure
 ```
 .
